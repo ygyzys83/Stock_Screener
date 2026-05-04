@@ -1,0 +1,23 @@
+# .gitignore
+
+# Environment variables — never commit this
+.env
+
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# PyCharm project files
+.idea/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Streamlit cache
+.streamlit/
+
+# Screener output files
+screener_results.csv
