@@ -27,7 +27,7 @@ def get_fundamentals(ticker: str) -> dict:
         return None
 
 
-def get_price_history(ticker: str, period: str = "6mo") -> pd.DataFrame:
+def get_price_history(ticker: str, period: str = "2y") -> pd.DataFrame:
     try:
         stock = yf.Ticker(ticker)
         df = stock.history(period=period)

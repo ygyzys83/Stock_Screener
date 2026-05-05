@@ -30,7 +30,7 @@ with st.sidebar:
 
     st.subheader("Fundamental rules")
     pe_on  = st.toggle("P/E ratio",  value=RULES_FUNDAMENTAL["pe_ratio"]["enabled"])
-    pe_max = st.slider("Max P/E",    1.0, 60.0, float(RULES_FUNDAMENTAL["pe_ratio"]["max"]),          step=1.0,  disabled=not pe_on)
+    pe_max = st.slider("Max P/E",    1.0, 80.0, float(RULES_FUNDAMENTAL["pe_ratio"]["max"]),          step=1.0,  disabled=not pe_on)
 
     pb_on  = st.toggle("P/B ratio",  value=RULES_FUNDAMENTAL["pb_ratio"]["enabled"])
     pb_max = st.slider("Max P/B",    0.5, 10.0, float(RULES_FUNDAMENTAL["pb_ratio"]["max"]),          step=0.5,  disabled=not pb_on)
@@ -47,16 +47,28 @@ with st.sidebar:
     st.divider()
 
     st.subheader("Technical rules")
-    rsi_on  = st.toggle("RSI breakout",      value=RULES_TECHNICAL["rsi_breakout"]["enabled"])
-    rsi_min = st.slider("RSI min", 0, 70,   RULES_TECHNICAL["rsi_breakout"]["min"],                  step=1,    disabled=not rsi_on)
-    rsi_max_val = st.slider("RSI max", 0, 100, RULES_TECHNICAL["rsi_breakout"]["max"],                step=1,    disabled=not rsi_on)
+    rsi_on = st.toggle("RSI breakout", value=RULES_TECHNICAL["rsi_breakout"]["enabled"])
+    rsi_min = st.slider("RSI min", 0, 70, RULES_TECHNICAL["rsi_breakout"]["min"], step=1, disabled=not rsi_on)
+    rsi_max_val = st.slider("RSI max", 30, 90, RULES_TECHNICAL["rsi_breakout"]["max"], step=1, disabled=not rsi_on)
 
-    macd_on  = st.toggle("MACD crossover",    value=RULES_TECHNICAL["macd_crossover"]["enabled"])
-    bb_on    = st.toggle("Bollinger squeeze", value=RULES_TECHNICAL["bb_squeeze"]["enabled"])
-    ma_on    = st.toggle("MA confluence",     value=RULES_TECHNICAL["ma_confluence"]["enabled"])
+    macd_on = st.toggle("MACD crossover", value=RULES_TECHNICAL["macd_crossover"]["enabled"])
+    bb_on = st.toggle("Bollinger squeeze", value=RULES_TECHNICAL["bb_squeeze"]["enabled"])
+    ma_on = st.toggle("MA confluence", value=RULES_TECHNICAL["ma_confluence"]["enabled"])
 
-    rvol_on  = st.toggle("Relative volume",   value=RULES_TECHNICAL["rel_volume_surge"]["enabled"])
-    rvol_min = st.slider("Min volume multiplier", 0.5, 10.0,
+    gc_on = st.toggle("Golden Cross", value=RULES_TECHNICAL["golden_cross"]["enabled"])
+    gc_lookback = st.slider("Golden Cross — lookback (trading days)", 10, 252,
+                            RULES_TECHNICAL["golden_cross"]["lookback_days"],
+                            step=5, disabled=not gc_on,
+                            help="How far back to look for a 50MA crossing above 200MA")
+
+    dc_on = st.toggle("Death Cross (must NOT have occurred)", value=RULES_TECHNICAL["death_cross"]["enabled"])
+    dc_lookback = st.slider("Death Cross — lookback (trading days)", 10, 252,
+                            RULES_TECHNICAL["death_cross"]["lookback_days"],
+                            step=5, disabled=not dc_on,
+                            help="Stock fails this rule if 50MA crossed below 200MA within this window")
+
+    rvol_on = st.toggle("Relative volume", value=RULES_TECHNICAL["rel_volume_surge"]["enabled"])
+    rvol_min = st.slider("Min volume multiplier", 1.0, 10.0,
                          float(RULES_TECHNICAL["rel_volume_surge"]["min_multiplier"]),
                          step=0.1, disabled=not rvol_on)
 
@@ -74,9 +86,16 @@ runtime_fundamental = {
 runtime_technical = {
     "rsi_breakout":     {"min": rsi_min, "max": rsi_max_val, "enabled": rsi_on},
     "macd_crossover":   {"enabled": macd_on},
-    "bb_squeeze":       {"enabled": bb_on},
+    "bb_squeeze":       {
+                            "enabled": bb_on,
+                            "window": 60,
+                            "percentile_threshold": 0.20,
+                            "lookback_periods": 3,
+                        },
     "ma_confluence":    {"enabled": ma_on},
-    "rel_volume_surge": {"min_multiplier": rvol_min, "enabled": rvol_on},
+    "golden_cross":     {"lookback_days": gc_lookback, "enabled": gc_on},
+    "death_cross":      {"lookback_days": dc_lookback, "enabled": dc_on},
+    "rel_volume_surge": {"min_multiplier": rvol_min,   "enabled": rvol_on},
 }
 
 # ── Helper: render detail expander for one stock ──────────────────────────────
