@@ -3,3 +3,5 @@ pandas
 requests
 tabulate
 streamlit
+numpy
+python-dotenv

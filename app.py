@@ -10,7 +10,7 @@ from config import (
 st.set_page_config(page_title="Stock Screener", layout="wide")
 st.title("Stock Screener")
 
-# ── Sidebar ───────────────────────────────────────────────────────────────────
+#Sidebar
 with st.sidebar:
     st.header("Configuration")
 
